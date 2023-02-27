@@ -1,0 +1,52 @@
+@page "/C_Pagos"
+@inject PagosBLL PagosBLL;
+
+<EditForm Model="Informacion">
+    <DataAnnotationsValidator />
+    <div class="card-body">
+        <form>
+            <div>
+
+                <button type="button" class="btn btn-info" @onclick="Buscar">Buscar Pagos</button>
+
+            </div>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>PagoId</th>
+                <th>Fecha</th>
+                <th>PersonaID</th>
+                <th>Concepto</th>
+                <th>Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Informacion)
+            {
+                <tr>
+                    <td>@item.PagoId</td>
+                    <td>@item.Fecha</td>
+                    <td>@item.PersonaId</td>
+                    <td>@item.Concepto</td>
+                    <td>@item.Monto</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</EditForm>
+
+@code {
+
+    public Pagos ocupacion { set; get; } = new Pagos();
+    public string Filtro { get; set; }
+    public string Criterio { get; set; }
+    public List<Pagos> Informacion { get; set; } = new List<Pagos>();
+    public void Buscar()
+    {
+       //Informacion = PagosBLL.GetList(o => true);
+    }
+
+}

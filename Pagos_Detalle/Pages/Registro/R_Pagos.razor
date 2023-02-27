@@ -1,0 +1,242 @@
+@page "/R_Pagos"
+@page "/R_Pagos/{PagoId:int}"
+
+@inject NotificationService notificationService
+@inject PagosBLL pagosBLL
+@inject PersonasBLL personasBLL
+@inject PrestamosBLL prestamosBLL
+
+<EditForm Model="pagos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Registro de Pagos</h3>
+        </div>
+
+        <div class="card-body">
+            @*Pagos*@
+            <div class="form-row align-items-center">
+                <div class="col">
+                    <div class="form-group">
+                        <label>PagoId</label>
+                        <div class="input-group">
+                            <InputNumber @bind-Value="pagos.PagoId" class="form-control col-4" />
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar">
+                                    <i class="oi oi-magnifying-glass" /> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @*Fecha*@
+            <div class="mb-3">
+                <label>Fecha</label>
+                <InputDate class="form-control" @bind-Value="pagos.Fecha" />
+                <ValidationMessage For="@(() => pagos.Fecha)" />
+            </div>
+
+            <div class="mb-3">
+                <label>PersonaId </label>
+                <div class="input-group mb-3">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="Cargar">Cargar</button>
+                    <InputSelect class="form-select" @bind-Value="pagos.PersonaId">
+                        @foreach (var persona in listPersonas)
+                        {
+                            <option value="@persona.PersonaId">@persona.NombreCompleto </option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(()=>pagos.PersonaId)" />
+                </div>
+            </div>
+
+            @*Concepto*@
+            <div class="mb-3">
+                <label>Concepto</label>
+                <InputText class="form-control" @bind-Value="pagos.Concepto" />
+                <ValidationMessage For="@(()=> pagos.Concepto )" />
+            </div>
+
+            @*PAGOS DETALLE*@
+            <fieldset class="border-success border border-1">
+                <h3>Detalle de Pago</h3>
+                <div class="row">
+                    @*PrestamoId *@
+                    <div class="col-2">
+                        <label>Prestamo Id:</label>
+                        <InputSelect class="form-select" @bind-Value="detalle.PrestamoId">
+                            <option disabled selected> [Seleccione] </option>
+                            @foreach (var prestamo in listPrestamos)
+                            {
+                                <option value="@prestamo.PrestamoId">@prestamo.PrestamoId @prestamo.Concepto
+                                    @prestamo.Balance</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    @*ValorPagado *@
+                    <div class="col-2">
+                        <label>Valor Pagado</label>
+                        <InputNumber class="form-control" @bind-Value="detalle.ValorPagado"></InputNumber>
+                        <ValidationMessage For="@(() => detalle.ValorPagado)"></ValidationMessage>
+                    </div>
+
+                    @*Boton agregar *@
+                    <div class="col-2">
+                        <br>
+                        <button type="button" class="btn btn-primary input-group-text" @onclick="AgregarDetalle">
+                            <span class="oi oi-plus">Agregar</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </fieldset>
+
+            @*Tabla de detalles*@
+            <hr />
+            <table class="table table-bordered table-light">
+                <thead class="thead">
+                    <tr class="table">
+                        <th>PrestamoId</th>
+                        <th>Valor Pagado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in pagos.Detalle)
+                    {
+                        <tr>
+                            <td>@detalle.PrestamoId</td>
+                            <td>@detalle.ValorPagado</td>
+                            <td> <button @onclick="@(() => pagos.Detalle.Remove(detalle) )"><i class="oi oi-trash" />
+                                    Eliminar</button> </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="row justify-content-between">
+                <div class="col-4">
+                    <label>Monto Total</label>
+                    <div class="input-group mb-3">
+                        <span class="form-control">@pagos.Monto</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div class="mb-3 text-center" display: inline-block>
+            <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo">
+                <i class="oi oi-file" /> Nuevo
+            </button>
+            <button type="submit" class="btn btn-lg btn-success">
+                <i class="oi oi-document" /> Guardar
+            </button>
+            <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar">
+                <i class="oi oi-trash" /> Eliminar
+            </button>
+        </div>
+    </div>
+</EditForm>
+@code {
+    [Parameter]
+    public int PagoId { get; set; }
+
+    public Pagos pagos { get; set; } = new Pagos();
+    public List<Personas> listPersonas { get; set; } = new List<Personas>();
+    public List<Prestamos> listPrestamos { get; set; } = new List<Prestamos>();
+    public PagosDetalles detalle { get; set; } = new PagosDetalles();
+     
+    protected override async Task OnInitializedAsync()
+    {
+
+      //listPersonas = await Personas.GetList(p => true);
+        if (PagoId > 0)
+        {
+            this.pagos.PagoId = PagoId;
+            await this.Buscar();
+        }
+    }
+
+    private async Task Buscar()
+    {
+        if (pagos.PagoId > 0)
+        {
+            var encontrado = await pagosBLL.Buscar(pagos.PagoId);
+
+            if (encontrado != null)
+                this.pagos = encontrado;
+
+        }
+    }
+
+    public async Task Cargar()
+    {
+      // listPrestamos = await PrestamosBLL.GetList(p => p.PersonaId == pagos.PersonaId && p.Balance > 0);
+    }
+
+    public void AgregarDetalle()
+    {
+        pagos.Detalle.Add(detalle);
+        detalle = new PagosDetalles();
+
+        pagos.Monto = pagos.Detalle.Sum(d => d.ValorPagado);
+    }
+
+
+    public void Nuevo()
+    {
+        pagos = new Pagos();
+        pagos.Fecha = DateTime.Now;
+
+    }
+
+    public async Task Guardar()
+    {
+        pagos.Fecha = DateTime.Now;
+        pagos.PersonaId = 1;
+        pagos.Monto = 100;
+        pagos.Concepto = "Prestamo personal";
+
+        pagos.Detalle.Add(new PagosDetalles { PrestamoId = 1, ValorPagado = 100 });
+
+        pagos.Detalle.Add(new PagosDetalles { PrestamoId = 2, ValorPagado = 200 });
+
+        await pagosBLL.Guardar(pagos);
+
+    }
+
+    public async void Eliminar()
+    {
+        bool elimino;
+
+        elimino = await pagosBLL.Eliminar(pagos);
+
+        if (elimino)
+        {
+            ShowNotification(
+            new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = "Eliminado correctamente"
+            });
+            Nuevo();
+
+        }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        notificationService.Notify(message);
+
+    }
+
+
+}

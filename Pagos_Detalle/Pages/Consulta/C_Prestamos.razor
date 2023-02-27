@@ -1,0 +1,61 @@
+@page "/C_Prestamos"
+@inject PrestamosBLL PrestamosBLL;
+
+<EditForm Model="Informacion">
+    <DataAnnotationsValidator/>
+        <div class="card-body">
+            <form>
+                <div>
+
+                    <button type="button"class="btn btn-lg btn-danger bi bi-search"@onclick="Buscar">Consultar Prestamos</button>
+
+                </div>
+            </form>
+        </div>
+
+
+        <table style="width:100%">
+            <thead>
+                <tr>
+                    <th> PrestamoID </th>
+                    <th style= "text-align:center;" >Fecha</th>
+                    <th style="text-align:center;" >Vence</th>
+                    <th>PersonaID</th>
+                    <th style="text-align:center;" >Concepto</th>
+                    <th style="text-align:center;" >Monto</th>
+                    <th style="text-align:center;" >Balance</th>
+                </tr>
+            </thead>
+                <tbody>
+                @foreach(var item in Informacion)
+                {
+                    <tr>
+                        <td style="text-align: center;">@item.PrestamoId</td>
+                        <td style="text-align: center;">@item.Fecha</td>
+                        <td style="text-align: center;">@item.Vence</td>
+                        <td style="text-align: center;">@item.PersonaId</td>
+                        <td style="text-align: center;">@item.Concepto</td>
+                        <td style="text-align: center;">@item.Monto</td>
+                        <td style="text-align: center;">@item.Balance</td>
+                    </tr>
+                }
+                </tbody>
+
+
+        </table>
+
+
+</EditForm>
+
+@code {
+
+    public Prestamos prestamo { set; get; } = new Prestamos();
+public string? Filtro { get; set; }
+public string? Criterio { get; set; }
+public List<Prestamos> Informacion { get; set; } = new List<Prestamos>();
+public void Buscar()
+{
+    Informacion = PrestamosBLL.GetList(o => true);
+}
+
+}

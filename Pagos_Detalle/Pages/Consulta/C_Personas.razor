@@ -1,0 +1,60 @@
+
+@page "/C_Personas"
+@inject PersonasBLL personasBLL;
+
+<EditForm Model="Informacion">
+    <DataAnnotationsValidator />
+        <div class="card-body">
+            <form>
+                <div>
+
+                    <button type="button" class="btn btn-lg btn-primary bi bi-file-earmark-plus" @onclick="Buscar">Buscar Personas</button>
+
+                </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+
+                    <th>PersonaId</th>
+                    <th>NombreCompleto</th>
+                    <th>Telefono</th>
+                    <th>Celular</th>
+                    <th>Descripcion</th>
+                    <th>Salario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Informacion)
+                {
+                    <tr>
+                        <td>@item.PersonaId</td>
+                        <td>@item.NombreCompleto</td>
+                        <td>@item.Telefono</td>
+                        <td>@item.Celular</td>
+                        <td>@item.Email</td>
+                        <td>@item.Direccion</td>
+                        <td>@item.FechaNacimiento</td>
+                        <td>@item.OcupacionId</td>
+
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    
+</EditForm>
+
+@code {
+
+    public Personas personas { set; get; } = new Personas();
+    public string? Filtro { get; set; }
+    public string? Criterio { get; set; }
+    public List<Personas> Informacion { get; set; } = new List<Personas>();
+    public void Buscar()
+    {
+        Informacion = personasBLL.GetList(o => true);
+    }
+
+}

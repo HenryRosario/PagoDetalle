@@ -1,0 +1,49 @@
+@page "/C_ocupaciones"
+@inject OcupacionesBLL ocupacionesBLL;
+
+<EditForm Model="Informacion">
+    <DataAnnotationsValidator />
+        <div class="card-body">
+        <h3> Consulta de Registro de Personas</h3>
+            <form>
+                <div>
+
+                    <button type="button" class="btn btn-lg btn-primary bi bi-file-earmark-plus" @onclick="Buscar">Consultar Ocupaciones</button>
+
+                </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>OcupacionId</th>
+                    <th>Descripcion</th>
+                    <th>Salario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Informacion)
+                {
+                    <tr>
+                        <td>@item.OcupacionId</td>
+                        <td>@item.Descripcion</td>
+                        <td>@item.Salario</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    
+</EditForm>
+
+@code {
+
+    public Ocupaciones ocupacion { set; get; } = new Ocupaciones();
+    public string? Filtro { get; set; }
+    public string? Criterio { get; set; }
+    public List<Ocupaciones> Informacion { get; set; } = new List<Ocupaciones>();
+    public void Buscar()
+    {
+        Informacion = ocupacionesBLL.GetList(o => true);
+    }
+
+}

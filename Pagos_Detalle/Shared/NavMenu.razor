@@ -1,0 +1,65 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Registro_Ocupacion</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="R_Pagos" Match="NavLinkMatch.All">
+                <span class="oi oi-plus" aria-hidden="true"></span> Registro Pagos
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="C_Pagos">
+                <span class="oi oi-pencil" aria-hidden="true"></span> Consulta Pagos
+            </NavLink>
+        </div>
+        
+      <div class="nav-item px-3">
+            <NavLink class="nav-link" href="R_Ocupaciones">
+                <span class="oi oi-plus" aria-hidden="true"></span> Registro Ocupaciones
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="C_Ocupaciones">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Consulta Ocupaciones
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="R_Personas">
+                <span class="oi oi-pencil" aria-hidden="true"></span> Registro Personas
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="C_Personas">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Consulta Personas
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="R_Prestamos">
+                <span class="oi oi-pencil" aria-hidden="true"></span> Registro Prestamos
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="C_Prestamos">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Consulta Prestamos
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
